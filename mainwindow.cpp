@@ -27,8 +27,9 @@ void MainWindow::on_btnLogin_clicked()
         return;
     }
 
-    QMessageBox::information(this, "Info", "Login logic will be implemented.");
+    ui->stackedWidget->setCurrentWidget(ui->pageMainMenu);
 }
+
 
 void MainWindow::on_btnSignUp_clicked()
 {
@@ -39,3 +40,9 @@ void MainWindow::on_btnForgot_clicked()
 {
     QMessageBox::information(this, "Info", "Password recovery will be implemented.");
 }
+
+void MainWindow::on_btnLogout_clicked()
+{
+        ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+}
+

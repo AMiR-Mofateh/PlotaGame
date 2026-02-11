@@ -19,6 +19,8 @@ private slots:
     void on_btnForgot_clicked();
 
 
+    void on_btnLogout_clicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
