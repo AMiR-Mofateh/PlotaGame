@@ -13,6 +13,12 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+private slots:
+    void on_btnLogin_clicked();
+    void on_btnSignUp_clicked();
+    void on_btnForgot_clicked();
+
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
