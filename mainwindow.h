@@ -29,6 +29,12 @@ private slots:
 
     void on_btnStartGame_clicked();
 
+    void on_btnOthello_clicked();
+
+    void on_btnBackFromOthello_clicked();
+
+    void on_btnBackFromConnectFour_clicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -36,6 +42,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QPushButton* connectFourCells[6][7];
+    QPushButton* othelloCells[8][8];
 
 };
 #endif // MAINWINDOW_H

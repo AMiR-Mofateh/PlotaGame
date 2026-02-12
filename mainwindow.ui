@@ -593,6 +593,195 @@ QLabel#label_6 {
         </layout>
        </widget>
       </widget>
+      <widget class="QWidget" name="pageOthelloBoard">
+       <property name="styleSheet">
+        <string notr="true">/* ===== PAGE BACKGROUND ===== */
+QWidget#pageOthelloBoard {
+    background-color: qradialgradient(
+        cx:0.5, cy:0.35, radius:1.4,
+        stop:0 #1b2735,
+        stop:0.4 #0f2027,
+        stop:0.8 #090a0f,
+        stop:1 #000000
+    );
+}
+
+/* ===== BOARD FRAME ===== */
+QWidget#othelloContainer {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #0f2027,
+        stop:1 #203a43
+    );
+    border: 3px solid #00eaff;
+    border-radius: 35px;
+    padding: 25px;
+}
+
+/* ===== CELLS ===== */
+QPushButton#othelloCell {
+    background-color: #062f26;
+    border: 2px solid #00eaff;
+    border-radius: 10px;
+}
+
+QPushButton#othelloCell:hover {
+    border: 2px solid #ffffff;
+    background-color: #0b3d2e;
+}
+
+/* ===== BACK BUTTON ===== */
+QPushButton#btnBackFromOthello {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 20px;
+    font-weight: bold;
+}
+
+QPushButton#btnBackFromOthello:hover {
+    background-color: #00eaff;
+    color: black;
+}
+
+/* ===== TITLE ===== */
+QLabel#label_7 {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 20px;
+    font-weight: bold;
+}
+</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Othello</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QWidget" name="othelloContainer" native="true">
+          <property name="styleSheet">
+           <string notr="true">/* ===== OTHELLO PAGE ===== */
+
+QWidget#othelloContainer {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #141e30,
+        stop:1 #243b55
+    );
+    border-radius: 30px;
+    border: 3px solid #00eaff;
+    padding: 20px;
+}
+
+/* دکمه برگشت اوتلو */
+QPushButton#btnBackFromOthello {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 18px;
+    font-weight: bold;
+}
+
+QPushButton#btnBackFromOthello:hover {
+    background-color: #00eaff;
+    color: black;
+}
+
+/* عنوان اوتلو */
+QLabel#label_7 {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 18px;
+    font-weight: bold;
+}
+</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="btnBackFromOthello">
+          <property name="styleSheet">
+           <string notr="true">QWidget#pageOtelloBoard {
+    background-color: qradialgradient(
+        cx:0.5, cy:0.4, radius:1.2,
+        stop:0 #1b2735,
+        stop:0.4 #090a0f,
+        stop:1 #000000
+    );
+}
+
+QWidget#OthelloContainer {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:1, y2:1,
+        stop:0 #141e30,
+        stop:1 #243b55
+    );
+    border-radius: 30px;
+    border: 3px solid #00eaff;
+    padding: 20px;
+}
+
+QPushButton {
+    background-color: #0f2027;
+    border-radius: 36px;
+    border: 2px solid #00eaff;
+}
+
+QPushButton:hover {
+    border: 2px solid #ffffff;
+}
+
+QPushButton#btnBackFromOthello {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 18px;
+    font-weight: bold;
+}
+
+QPushButton#btnBackFromOthello:hover {
+    background-color: #00eaff;
+    color: black;
+}
+
+QLabel#label_7 {
+    background-color: #111;
+    color: #00eaff;
+    border: 2px solid #00eaff;
+    border-radius: 15px;
+    padding: 8px 18px;
+    font-weight: bold;
+}
+
+</string>
+          </property>
+          <property name="text">
+           <string>Back</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>

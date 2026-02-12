@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     qApp->setStyleSheet(R"(
-
     QWidget {
         background-color: qradialgradient(
             cx:0.5, cy:0.35, radius:1.3,
@@ -24,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
         font-family: Segoe UI;
         font-size: 14px;
     }
-
     QFrame, QWidget#connectFourContainer {
         background-color: qlineargradient(
             x1:0, y1:0, x2:1, y2:1,
@@ -34,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
         border-radius: 20px;
         border: 1px solid #1f3c88;
     }
-
     QPushButton {
         background-color: #1a1d2b;
         color: #e6edf3;
@@ -42,12 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
         border-radius: 12px;
         padding: 6px 16px;
     }
-
     QPushButton:hover {
         background-color: #2c3e50;
         border: 1px solid #00eaff;
     }
-
     QPushButton#btnBack,
     QPushButton#btnStartGame,
     QPushButton#btnLogin {
@@ -57,14 +52,12 @@ MainWindow::MainWindow(QWidget *parent)
         border-radius: 16px;
         font-weight: bold;
     }
-
     QPushButton#btnBack:hover,
     QPushButton#btnStartGame:hover,
     QPushButton#btnLogin:hover {
         background-color: #00eaff;
         color: black;
     }
-
     QLabel#label_6,
     QLabel#lblTitle {
         background-color: #0d1117;
@@ -76,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
         font-weight: bold;
         letter-spacing: 2px;
     }
-
     QLineEdit {
         background-color: #111827;
         border: 1px solid #2f3640;
@@ -84,12 +76,12 @@ MainWindow::MainWindow(QWidget *parent)
         padding: 6px;
         color: #e6edf3;
     }
-
     QLineEdit:focus {
         border: 1px solid #00eaff;
     }
-
     )");
+
+
 
 
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
@@ -127,6 +119,34 @@ MainWindow::MainWindow(QWidget *parent)
             });
         }
     }
+
+
+    QGridLayout* gridOthello = new QGridLayout(ui->othelloContainer);
+    gridOthello->setSpacing(6);
+    gridOthello->setContentsMargins(20,20,20,20);
+
+    for(int row = 0; row < 8; row++)
+    {
+        for(int col = 0; col < 8; col++)
+        {
+            QPushButton* cell = new QPushButton(ui->othelloContainer);
+            cell->setFixedSize(65,65);
+            cell->setObjectName("othelloCell");
+            cell->setCursor(Qt::PointingHandCursor);
+
+            gridOthello->addWidget(cell, row, col);
+            othelloCells[row][col] = cell;
+        }
+    }
+
+
+    // مهره‌های شروع
+    othelloCells[3][3]->setStyleSheet("background-color: white; border-radius: 30px;");
+    othelloCells[4][4]->setStyleSheet("background-color: white; border-radius: 30px;");
+    othelloCells[3][4]->setStyleSheet("background-color: black; border-radius: 30px;");
+    othelloCells[4][3]->setStyleSheet("background-color: black; border-radius: 30px;");
+
+
 }
 
 
@@ -174,10 +194,10 @@ void MainWindow::on_btnConnectFour_clicked()
     ui->stackedWidget->setCurrentWidget(ui->pageConnectFourBoard);
 }
 
-// void MainWindow::on_btnOthello_clicked()
-// {
-//     ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
-// }
+void MainWindow::on_btnOthello_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
+}
 
 void MainWindow::on_btnBack_clicked()
 {
@@ -189,5 +209,18 @@ void MainWindow::on_btnBack_clicked()
 void MainWindow::on_btnStartGame_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
+}
+
+
+void MainWindow::on_btnBackFromOthello_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
+}
+
+
+void MainWindow::on_btnBackFromConnectFour_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
+
 }
 
