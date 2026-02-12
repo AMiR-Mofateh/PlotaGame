@@ -9,6 +9,89 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
+    qApp->setStyleSheet(R"(
+
+    QWidget {
+        background-color: qradialgradient(
+            cx:0.5, cy:0.35, radius:1.3,
+            stop:0 #16222a,
+            stop:0.4 #0f2027,
+            stop:0.8 #090a0f,
+            stop:1 #000000
+        );
+        color: #e6edf3;
+        font-family: Segoe UI;
+        font-size: 14px;
+    }
+
+    QFrame, QWidget#connectFourContainer {
+        background-color: qlineargradient(
+            x1:0, y1:0, x2:1, y2:1,
+            stop:0 #141e30,
+            stop:1 #243b55
+        );
+        border-radius: 20px;
+        border: 1px solid #1f3c88;
+    }
+
+    QPushButton {
+        background-color: #1a1d2b;
+        color: #e6edf3;
+        border: 1px solid #2f3640;
+        border-radius: 12px;
+        padding: 6px 16px;
+    }
+
+    QPushButton:hover {
+        background-color: #2c3e50;
+        border: 1px solid #00eaff;
+    }
+
+    QPushButton#btnBack,
+    QPushButton#btnStartGame,
+    QPushButton#btnLogin {
+        background-color: #0d1117;
+        color: #00eaff;
+        border: 2px solid #00eaff;
+        border-radius: 16px;
+        font-weight: bold;
+    }
+
+    QPushButton#btnBack:hover,
+    QPushButton#btnStartGame:hover,
+    QPushButton#btnLogin:hover {
+        background-color: #00eaff;
+        color: black;
+    }
+
+    QLabel#label_6,
+    QLabel#lblTitle {
+        background-color: #0d1117;
+        color: #00eaff;
+        border: 2px solid #00eaff;
+        border-radius: 18px;
+        padding: 8px 20px;
+        font-size: 26px;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    QLineEdit {
+        background-color: #111827;
+        border: 1px solid #2f3640;
+        border-radius: 10px;
+        padding: 6px;
+        color: #e6edf3;
+    }
+
+    QLineEdit:focus {
+        border: 1px solid #00eaff;
+    }
+
+    )");
+
+
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 
     QGridLayout* gridCF = new QGridLayout;
@@ -16,7 +99,6 @@ MainWindow::MainWindow(QWidget *parent)
     gridCF->setContentsMargins(25,25,25,25);
     ui->connectFourContainer->setLayout(gridCF);
 
-    /* ====== 🪐 CREATE CELLS ====== */
     for(int row = 0; row < 6; row++)
     {
         for(int col = 0; col < 7; col++)
