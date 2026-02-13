@@ -35,6 +35,10 @@ private slots:
 
     void on_btnBackFromConnectFour_clicked();
 
+    void on_btnLoginAfterSignup_clicked();
+
+    void on_btnLoginAfterForget_clicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();

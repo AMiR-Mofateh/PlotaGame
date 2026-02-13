@@ -174,12 +174,12 @@ void MainWindow::on_btnLogin_clicked()
 
 void MainWindow::on_btnSignUp_clicked()
 {
-    QMessageBox::information(this, "Info", "Sign Up page will be implemented.");
+    ui->stackedWidget->setCurrentWidget(ui->pageSignup);
 }
 
 void MainWindow::on_btnForgot_clicked()
 {
-    QMessageBox::information(this, "Info", "Password recovery will be implemented.");
+    ui->stackedWidget->setCurrentWidget(ui->pageForget);
 }
 
 void MainWindow::on_btnLogout_clicked()
@@ -222,5 +222,31 @@ void MainWindow::on_btnBackFromConnectFour_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
 
+}
+
+
+void MainWindow::on_btnLoginAfterSignup_clicked()
+{
+    QString username = ui->textname->text();
+    QString password = ui->textpass->text();
+    QString id = ui->textid->text();
+    QString phone = ui->textphone->text();
+    QString email = ui->textemail->text();
+
+    if(username.isEmpty() || password.isEmpty() || id.isEmpty() || phone.isEmpty() || email.isEmpty())
+    {
+        QMessageBox::warning(this, "Error", "Fields cannot be empty!");
+        return;
+    }
+
+
+    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+
+}
+
+
+void MainWindow::on_btnLoginAfterForget_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 }
 
