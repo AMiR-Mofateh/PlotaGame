@@ -3,6 +3,7 @@
 
 #include "qpushbutton.h"
 #include <QMainWindow>
+#include "usermanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -49,14 +50,22 @@ private slots:
 
     void on_btnBackFromConnectFourHome_clicked();
 
+    void on_btnProfile_clicked();
+
+    void on_BackformEdit_clicked();
+
+    void on_SaveEdit_clicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    UserManager *userManager;
     QPushButton* connectFourCells[6][7];
     QPushButton* othelloCells[8][8];
+    void updateProfilePage();
 
 };
 #endif // MAINWINDOW_H

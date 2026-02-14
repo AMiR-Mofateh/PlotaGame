@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QMessageBox>
 #include <QGridLayout>
+#include <QCryptographicHash>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // مقداردهی مدیریت کاربران
+    userManager = new UserManager();
 
     qApp->setStyleSheet(R"(
     QWidget {
@@ -81,11 +84,9 @@ MainWindow::MainWindow(QWidget *parent)
     }
     )");
 
+    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 
-
-
-    ui->stackedWidget->setCurrentWidget(ui->pageLogin); // دوز 4تایی
-
+    // --- تنظیمات دوز 4تایی ---
     QGridLayout* gridCF = new QGridLayout;
     gridCF->setSpacing(12);
     gridCF->setContentsMargins(25,25,25,25);
@@ -98,13 +99,11 @@ MainWindow::MainWindow(QWidget *parent)
             QPushButton* cell = new QPushButton;
             cell->setFixedSize(72,72);
             cell->setCursor(Qt::PointingHandCursor);
-
             cell->setStyleSheet(
                 "background-color: #0f2027;"
                 "border-radius: 36px;"
                 "border: 2px solid #00eaff;"
                 );
-
             gridCF->addWidget(cell, row, col);
             connectFourCells[row][col] = cell;
 
@@ -118,8 +117,8 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
-
-    QGridLayout* gridOthello = new QGridLayout(ui->othelloContainer); // اتلو
+    // --- تنظیمات اتلو ---
+    QGridLayout* gridOthello = new QGridLayout(ui->othelloContainer);
     gridOthello->setSpacing(6);
     gridOthello->setContentsMargins(20,20,20,20);
 
@@ -131,143 +130,127 @@ MainWindow::MainWindow(QWidget *parent)
             cell->setFixedSize(65,65);
             cell->setObjectName("othelloCell");
             cell->setCursor(Qt::PointingHandCursor);
-
             gridOthello->addWidget(cell, row, col);
             othelloCells[row][col] = cell;
         }
     }
 
-
     othelloCells[3][3]->setStyleSheet("background-color: white; border-radius: 30px;");
     othelloCells[4][4]->setStyleSheet("background-color: white; border-radius: 30px;");
     othelloCells[3][4]->setStyleSheet("background-color: black; border-radius: 30px;");
     othelloCells[4][3]->setStyleSheet("background-color: black; border-radius: 30px;");
-
-
 }
-
 
 MainWindow::~MainWindow()
 {
+    delete userManager;
     delete ui;
 }
 
-
+// --- توابع ورود و ثبت نام ---
 
 void MainWindow::on_btnLogin_clicked()
 {
     QString username = ui->txtUsername->text();
     QString password = ui->txtPassword->text();
 
-    if(username.isEmpty() || password.isEmpty())
-    {
+    if(username.isEmpty() || password.isEmpty()) {
         QMessageBox::warning(this, "Error", "Fields cannot be empty!");
         return;
     }
 
+    User* user = userManager->loginUser(username, password);
+    if(user) {
+        ui->stackedWidget->setCurrentWidget(ui->pageMainMenu);
+    } else {
+        QMessageBox::critical(this, "Error", "Invalid username or password!");
+    }
+}
+
+void MainWindow::on_btnLoginAfterSignup_clicked()
+{
+    QString name = ui->textname->text();
+    QString password = ui->textpass->text();
+    QString id = ui->textid->text(); // به عنوان Username
+    QString phone = ui->textphone->text();
+    QString email = ui->textemail->text();
+
+    if(name.isEmpty() || password.isEmpty() || id.isEmpty() || phone.isEmpty() || email.isEmpty()) {
+        QMessageBox::warning(this, "Error", "All fields must be filled!");
+        return;
+    }
+
+    if(password.length() < 8) {
+        QMessageBox::warning(this, "Error", "Password must be at least 8 characters!");
+        return;
+    }
+
+    // هش کردن پسورد
+    QString hashed = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
+    User newUser(name, id, phone, email, hashed);
+
+    if(userManager->registerUser(newUser)) {
+        QMessageBox::information(this, "Success", "Registration successful!");
+        ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+    } else {
+        QMessageBox::warning(this, "Error", "Username already exists!");
+    }
+}
+
+// --- توابع پروفایل و ویرایش ---
+
+void MainWindow::on_btnProfile_clicked()
+{
+    User* current = userManager->getCurrentUser();
+    if(current) {
+        // فرض بر این است که در صفحه EditProfile نام lineEdit ها را می‌دانید
+        // مطابق با اسامی که احتمالا در UI گذاشته‌اید (باید چک کنید)
+        ui->lineEdit->setText(current->getName());
+        ui->lineEdit_4->setText(current->getUsername());
+        ui->lineEdit_2->setText(current->getPhone());
+        ui->lineEdit_3->setText(current->getEmail());
+    }
+    ui->stackedWidget->setCurrentWidget(ui->pageEditProfile);
+}
+
+void MainWindow::on_SaveEdit_clicked()
+{
+    User* current = userManager->getCurrentUser();
+    if(current) {
+        current->setName(ui->lineEdit->text());
+        current->setPhone(ui->lineEdit_2->text());
+        current->setEmail(ui->lineEdit_3->text());
+        userManager->saveUsers(); // ذخیره تغییرات در فایل
+        QMessageBox::information(this, "Success", "Profile Updated!");
+    }
     ui->stackedWidget->setCurrentWidget(ui->pageMainMenu);
 }
 
+// --- توابع ناوبری (Navigation) ---
 
-void MainWindow::on_btnSignUp_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageSignup);
-}
-
-void MainWindow::on_btnForgot_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageForget);
-}
+void MainWindow::on_btnSignUp_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageSignup); }
+void MainWindow::on_btnForgot_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageForget); }
+void MainWindow::on_btnBack_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageMainMenu); }
+void MainWindow::on_btnStartGame_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
+void MainWindow::on_BackformEdit_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageMainMenu); }
 
 void MainWindow::on_btnLogout_clicked()
 {
+    userManager->logout();
     ui->txtUsername->clear();
     ui->txtPassword->clear();
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 }
 
-void MainWindow::on_btnConnectFour_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome);
-}
+void MainWindow::on_btnConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome); }
+void MainWindow::on_btnOthello_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome); }
 
-void MainWindow::on_btnOthello_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome);
-}
+void MainWindow::on_NewGameOthello_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard); }
+void MainWindow::on_btnBackFromOthello_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
+void MainWindow::on_btnBackFromOtelloHome_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 
-void MainWindow::on_btnBack_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageMainMenu);
-}
+void MainWindow::on_NewGameConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageConnectFourBoard); }
+void MainWindow::on_btnBackFromConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
+void MainWindow::on_btnBackFromConnectFourHome_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 
-
-
-void MainWindow::on_btnStartGame_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
-}
-
-
-void MainWindow::on_btnBackFromOthello_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
-}
-
-
-void MainWindow::on_btnBackFromConnectFour_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
-
-}
-
-
-void MainWindow::on_btnLoginAfterSignup_clicked()
-{
-    QString username = ui->textname->text();
-    QString password = ui->textpass->text();
-    QString id = ui->textid->text();
-    QString phone = ui->textphone->text();
-    QString email = ui->textemail->text();
-    if(username.isEmpty() || password.isEmpty() || id.isEmpty() || phone.isEmpty() || email.isEmpty())
-    {
-        QMessageBox::warning(this, "Error", "Fields cannot be empty!");
-        return;
-    }
-    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
-
-}
-
-
-void MainWindow::on_btnLoginAfterForget_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
-}
-
-
-
-
-void MainWindow::on_NewGameOthello_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
-}
-
-
-
-void MainWindow::on_btnBackFromOtelloHome_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
-}
-
-
-void MainWindow::on_NewGameConnectFour_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
-}
-
-
-void MainWindow::on_btnBackFromConnectFourHome_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
-}
-
+void MainWindow::on_btnLoginAfterForget_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageLogin); }
