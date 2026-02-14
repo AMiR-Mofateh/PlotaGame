@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+    ui->stackedWidget->setCurrentWidget(ui->pageLogin); // دوز 4تایی
 
     QGridLayout* gridCF = new QGridLayout;
     gridCF->setSpacing(12);
@@ -99,7 +99,6 @@ MainWindow::MainWindow(QWidget *parent)
             cell->setFixedSize(72,72);
             cell->setCursor(Qt::PointingHandCursor);
 
-            // سوراخ نئون فضایی
             cell->setStyleSheet(
                 "background-color: #0f2027;"
                 "border-radius: 36px;"
@@ -109,7 +108,6 @@ MainWindow::MainWindow(QWidget *parent)
             gridCF->addWidget(cell, row, col);
             connectFourCells[row][col] = cell;
 
-            // تست کلیک - مهره قرمز نئون
             connect(cell, &QPushButton::clicked, this, [=](){
                 cell->setStyleSheet(
                     "background-color: #ff073a;"
@@ -121,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-    QGridLayout* gridOthello = new QGridLayout(ui->othelloContainer);
+    QGridLayout* gridOthello = new QGridLayout(ui->othelloContainer); // اتلو
     gridOthello->setSpacing(6);
     gridOthello->setContentsMargins(20,20,20,20);
 
@@ -140,7 +138,6 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-    // مهره‌های شروع
     othelloCells[3][3]->setStyleSheet("background-color: white; border-radius: 30px;");
     othelloCells[4][4]->setStyleSheet("background-color: white; border-radius: 30px;");
     othelloCells[3][4]->setStyleSheet("background-color: black; border-radius: 30px;");
@@ -191,12 +188,12 @@ void MainWindow::on_btnLogout_clicked()
 
 void MainWindow::on_btnConnectFour_clicked()
 {
-    ui->stackedWidget->setCurrentWidget(ui->pageConnectFourBoard);
+    ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome);
 }
 
 void MainWindow::on_btnOthello_clicked()
 {
-    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome);
 }
 
 void MainWindow::on_btnBack_clicked()
@@ -232,14 +229,11 @@ void MainWindow::on_btnLoginAfterSignup_clicked()
     QString id = ui->textid->text();
     QString phone = ui->textphone->text();
     QString email = ui->textemail->text();
-
     if(username.isEmpty() || password.isEmpty() || id.isEmpty() || phone.isEmpty() || email.isEmpty())
     {
         QMessageBox::warning(this, "Error", "Fields cannot be empty!");
         return;
     }
-
-
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 
 }
@@ -248,5 +242,32 @@ void MainWindow::on_btnLoginAfterSignup_clicked()
 void MainWindow::on_btnLoginAfterForget_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+}
+
+
+
+
+void MainWindow::on_NewGameOthello_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
+}
+
+
+
+void MainWindow::on_btnBackFromOtelloHome_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageGameSelection);
+}
+
+
+void MainWindow::on_NewGameConnectFour_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
+}
+
+
+void MainWindow::on_btnBackFromConnectFourHome_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloBoard);
 }
 

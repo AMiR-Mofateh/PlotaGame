@@ -39,6 +39,16 @@ private slots:
 
     void on_btnLoginAfterForget_clicked();
 
+
+
+    void on_NewGameOthello_clicked();
+
+    void on_btnBackFromOtelloHome_clicked();
+
+    void on_NewGameConnectFour_clicked();
+
+    void on_btnBackFromConnectFourHome_clicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
