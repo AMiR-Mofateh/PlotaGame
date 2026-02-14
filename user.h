@@ -2,6 +2,16 @@
 #define USER_H
 
 #include <QString>
+#include <QList>
+#include <QDateTime>
+
+struct GameRecord {
+    QString gameName;   // نام بازی (Othello یا Connect4)
+    QString opponent;   // نام حریف
+    QString result;     // Win, Loss, Draw
+    int score;          // امتیاز کسب شده
+    QString date;       // تاریخ بازی
+};
 
 class User
 {
@@ -18,12 +28,14 @@ public:
     QString getPhone() const;
     QString getEmail() const;
     QString getHashedPassword() const;
+    QList<GameRecord> getHistory() const; // دریافت تاریخچه
 
     void setName(const QString& name);
     void setUsername(const QString& username);
     void setPhone(const QString& phone);
     void setEmail(const QString& email);
     void setHashedPassword(const QString& hashedPassword);
+    void addGameRecord(const GameRecord& record); // افزودن بازی جدید به تاریخچه
 
 private:
     QString name;
@@ -31,6 +43,7 @@ private:
     QString phone;
     QString email;
     QString hashedPassword;
+    QList<GameRecord> history; // لیست تاریخچه بازی‌ها
 };
 
-#endif
+#endif // USER_H

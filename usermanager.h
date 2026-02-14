@@ -15,20 +15,20 @@ class UserManager
 public:
     UserManager();
 
-    // توابع اصلی
     bool registerUser(User newUser);
     User* loginUser(QString username, QString password);
-    void saveUsers();  // ذخیره در فایل
-    void loadUsers();  // خواندن از فایل
+    bool resetPassword(QString phone, QString newPassword); // تابع جدید برای فراموشی رمز
+
+    void saveUsers();
+    void loadUsers();
     bool isUsernameTaken(QString username);
 
-    // نگهداری کاربر فعلی که لاگین کرده
     User* getCurrentUser();
     void logout();
 
 private:
     QList<User> users;
-    User* currentUser; // اشاره‌گر به کاربری که الان داخل سیستم
+    User* currentUser;
     QString filePath;
 };
 

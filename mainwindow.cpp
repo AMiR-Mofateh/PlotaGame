@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QGridLayout>
 #include <QCryptographicHash>
+#include <QRegularExpression> // اضافه شده برای اعتبارسنجی
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -180,8 +181,26 @@ void MainWindow::on_btnLoginAfterSignup_clicked()
         return;
     }
 
+    // 1. اعتبارسنجی پسورد (حداقل 8 کاراکتر)
     if(password.length() < 8) {
         QMessageBox::warning(this, "Error", "Password must be at least 8 characters!");
+        return;
+    }
+
+    // 2. اعتبارسنجی ایمیل با Regex
+    // الگوی استاندارد ایمیل
+    QRegularExpression emailRegex(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
+    if(!emailRegex.match(email).hasMatch()) {
+        QMessageBox::warning(this, "Error", "Invalid Email Address!");
+        return;
+    }
+
+    // 3. اعتبارسنجی شماره تلفن با Regex
+    // فرض بر این است که شماره باید فقط عدد باشد و مثلا 11 رقم (مثل 0912...)
+    // اگر فرمت خاصی مد نظر نیست، فقط چک می‌کنیم که تماما عدد باشد.
+    QRegularExpression phoneRegex(R"(^\d{10,11}$)");
+    if(!phoneRegex.match(phone).hasMatch()) {
+        QMessageBox::warning(this, "Error", "Invalid Phone Number! (10-11 digits)");
         return;
     }
 
@@ -253,4 +272,25 @@ void MainWindow::on_NewGameConnectFour_clicked() { ui->stackedWidget->setCurrent
 void MainWindow::on_btnBackFromConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 void MainWindow::on_btnBackFromConnectFourHome_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 
-void MainWindow::on_btnLoginAfterForget_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageLogin); }
+void MainWindow::on_btnLoginAfterForget_clicked()
+{
+    QString phone = ui->lineEdit_6->text(); // فیلد شماره تلفن در صفحه فراموشی
+    QString newPass = ui->lineEdit_7->text(); // فیلد پسورد جدید
+
+    if(phone.isEmpty() || newPass.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Please fill all fields!");
+        return;
+    }
+
+    if(newPass.length() < 8) {
+        QMessageBox::warning(this, "Error", "New password must be at least 8 characters!");
+        return;
+    }
+
+    if(userManager->resetPassword(phone, newPass)) {
+        QMessageBox::information(this, "Success", "Password changed successfully! Please Login.");
+        ui->stackedWidget->setCurrentWidget(ui->pageLogin);
+    } else {
+        QMessageBox::critical(this, "Error", "Phone number not found!");
+    }
+}

@@ -5,31 +5,50 @@
 
 UserManager::UserManager() {
     currentUser = nullptr;
-    // مسیر فایل جیسون در کنار فایل اجرایی برنامه
     filePath = QCoreApplication::applicationDirPath() + "/users_data.json";
     loadUsers();
 }
 
 bool UserManager::registerUser(User newUser) {
     if (isUsernameTaken(newUser.getUsername())) {
-        return false; // نام کاربری تکراری است
+        return false;
     }
     users.append(newUser);
-    saveUsers(); // بلافاصله ذخیره کن
+    saveUsers();
     return true;
 }
 
 User* UserManager::loginUser(QString username, QString password) {
-    // پسورد ورودی را هش می‌کنیم تا با دیتابیس مقایسه شود
     QString inputHash = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
 
     for (int i = 0; i < users.size(); ++i) {
         if (users[i].getUsername() == username && users[i].getHashedPassword() == inputHash) {
-            currentUser = &users[i]; // ست کردن کاربر فعلی
+            currentUser = &users[i];
             return currentUser;
         }
     }
-    return nullptr; // پیدا نشد
+    return nullptr;
+}
+
+// پیاده‌سازی تابع فراموشی رمز عبور
+bool UserManager::resetPassword(QString phone, QString newPassword) {
+    QString newHash = QString(QCryptographicHash::hash(newPassword.toUtf8(), QCryptographicHash::Sha256).toHex());
+    bool found = false;
+
+    // جستجو بر اساس شماره تلفن
+    for (int i = 0; i < users.size(); ++i) {
+        if (users[i].getPhone() == phone) {
+            users[i].setHashedPassword(newHash);
+            found = true;
+            break;
+        }
+    }
+
+    if (found) {
+        saveUsers(); // ذخیره تغییرات
+        return true;
+    }
+    return false;
 }
 
 bool UserManager::isUsernameTaken(QString username) {
@@ -47,7 +66,21 @@ void UserManager::saveUsers() {
         obj["username"] = u.getUsername();
         obj["phone"] = u.getPhone();
         obj["email"] = u.getEmail();
-        obj["password"] = u.getHashedPassword(); // پسورد هش شده ذخیره می‌شود
+        obj["password"] = u.getHashedPassword();
+
+        // ذخیره تاریخچه بازی‌ها
+        QJsonArray histArray;
+        for (const GameRecord &rec : u.getHistory()) {
+            QJsonObject hObj;
+            hObj["game"] = rec.gameName;
+            hObj["opponent"] = rec.opponent;
+            hObj["result"] = rec.result;
+            hObj["score"] = rec.score;
+            hObj["date"] = rec.date;
+            histArray.append(hObj);
+        }
+        obj["history"] = histArray;
+
         jsonArray.append(obj);
     }
 
@@ -75,6 +108,22 @@ void UserManager::loadUsers() {
                obj["phone"].toString(),
                obj["email"].toString(),
                obj["password"].toString());
+
+        // لود کردن تاریخچه
+        if (obj.contains("history")) {
+            QJsonArray histArray = obj["history"].toArray();
+            for (const auto &hVal : histArray) {
+                QJsonObject hObj = hVal.toObject();
+                GameRecord rec;
+                rec.gameName = hObj["game"].toString();
+                rec.opponent = hObj["opponent"].toString();
+                rec.result = hObj["result"].toString();
+                rec.score = hObj["score"].toInt();
+                rec.date = hObj["date"].toString();
+                u.addGameRecord(rec);
+            }
+        }
+
         users.append(u);
     }
     file.close();
