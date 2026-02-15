@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="pageLogin">
        <widget class="QWidget" name="formContainer&#10;" native="true">
@@ -318,14 +318,18 @@ QPushButton:hover {
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="OthelloScore">
+            <widget class="QLabel" name="lblTotalScoreOthello">
              <property name="text">
               <string>Total score : </string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QTableWidget" name="tableHistoryOthello"/>
+            <widget class="QTableWidget" name="tableOthelloHistory">
+             <property name="focusPolicy">
+              <enum>Qt::FocusPolicy::NoFocus</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="NewGameOthello">
@@ -383,7 +387,7 @@ QPushButton:hover {
            </sizepolicy>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="5" column="0">
+           <item row="4" column="0">
             <widget class="QPushButton" name="btnLogout">
              <property name="styleSheet">
               <string notr="true">QPushButton {
@@ -400,22 +404,6 @@ QPushButton:hover {
              </property>
              <property name="text">
               <string>Logout</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="font">
-              <font>
-               <pointsize>18</pointsize>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Main Menu</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -439,27 +427,38 @@ QPushButton:hover {
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="btnHistory">
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
-    background-color: #34495E;
-    color: white;
-    border-radius: 8px;
-    font-size: 12pt;
-}
-QPushButton:hover {
-    background-color: #1ABC9C;
-}
-
-</string>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <bold>true</bold>
+              </font>
              </property>
              <property name="text">
-              <string>Game History</string>
+              <string>Main Menu</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="1" column="0">
+            <widget class="QLabel" name="lblWelcome&#10;">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Welcome Player</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
             <widget class="QPushButton" name="btnProfile">
              <property name="styleSheet">
               <string notr="true">QPushButton {
@@ -476,21 +475,6 @@ QPushButton:hover {
              </property>
              <property name="text">
               <string>Profile</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="lblWelcome&#10;">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Welcome Player</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -752,14 +736,18 @@ QLabel#label_6 {
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="ConnectFourScore">
+            <widget class="QLabel" name="lblTotalScoreC4">
              <property name="text">
               <string>Total score :</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QTableWidget" name="tableHistoryConnectFour"/>
+            <widget class="QTableWidget" name="tableConnectFourHistory">
+             <property name="focusPolicy">
+              <enum>Qt::FocusPolicy::NoFocus</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="NewGameConnectFour">

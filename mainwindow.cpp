@@ -77,6 +77,47 @@ MainWindow::MainWindow(QWidget *parent)
     }
     )");
 
+    ui->tableConnectFourHistory->setStyleSheet(R"(
+    QTableWidget {
+        background-color: rgba(20, 30, 48, 0.7); /* نیمه شفاف برای هماهنگی با پس‌زمینه */
+        color: #e6edf3;
+        gridline-color: #00eaff; /* خطوط جدول نئونی */
+        border: 1px solid #00eaff;
+        border-radius: 10px;
+        font-size: 13px;
+        selection-background-color: rgba(0, 234, 255, 0.3); /* رنگ انتخاب سطر */
+        selection-color: white;
+    }
+
+    QHeaderView::section {
+        background-color: #0f2027; /* هدر تیره */
+        color: #00eaff; /* متن هدر آبی نئونی */
+        padding: 5px;
+        border: 1px solid #1f3c5a;
+        font-weight: bold;
+    }
+
+    QTableWidget QTableCornerButton::section {
+        background-color: #0f2027;
+        border: 1px solid #1f3c5a;
+    }
+
+    /* استایل دادن به اسکرول‌بار برای اینکه سفید نماند */
+    QScrollBar:vertical {
+        border: none;
+        background: #090a0f;
+        width: 10px;
+        margin: 0px;
+    }
+    QScrollBar::handle:vertical {
+        background: #00eaff;
+        min-height: 20px;
+        border-radius: 5px;
+    }
+    )");
+    // همین استایل را برای جدول اتلو هم کپی کنید
+    ui->tableOthelloHistory->setStyleSheet(ui->tableConnectFourHistory->styleSheet());
+
     // تنظیم صفحه پیش‌فرض
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 
@@ -163,9 +204,14 @@ void MainWindow::handleConnectFourClick(int col) {
 
         // بررسی وضعیت پایان بازی
         if (c4Game->checkWin(row, col)) {
-            QString winner = (c4Game->getCurrentPlayer() == 1) ? "Yellow (Player 1)" : "Red (Player 2)";
-            QMessageBox::information(this, "Game Over", winner + " Wins!");
-            // TODO: ذخیره در تاریخچه کاربر
+            int winner = c4Game->getCurrentPlayer();
+            QString role = (winner == 1) ? "Yellow" : "Red";
+
+            // ذخیره تاریخچه برای کاربر فعلی
+            saveGameResult("Connect Four", "Guest Player", role, "Win", 100);
+
+            QMessageBox::information(this, "برنده", role + " پیروز شد!");
+            updateHistoryTables(); // آپدیت آنی جدول
             ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome);
         }
         else if (c4Game->isFull()) {
@@ -216,17 +262,22 @@ void MainWindow::handleOthelloClick(int row, int col) {
             othelloGame->switchTurn();
 
             // بررسی مجدد: اگر نفر قبلی هم حرکت نداشت -> پایان بازی
+            // در انتهای بخش تشخیص پایان بازی اتلو:
             if (!othelloGame->hasValidMove(othelloGame->getCurrentPlayer())) {
-                int s1 = othelloGame->getScore(1); // سیاه
-                int s2 = othelloGame->getScore(2); // سفید
-                QString msg = QString("Game Over!\nBlack: %1\nWhite: %2\n").arg(s1).arg(s2);
+                int blackScore = othelloGame->getScore(1);
+                int whiteScore = othelloGame->getScore(2);
 
-                if (s1 > s2) msg += "Winner: Black";
-                else if (s2 > s1) msg += "Winner: White";
-                else msg += "Result: Draw";
+                QString result, role;
+                int finalScore = blackScore; // امتیاز ثبت شده
 
-                QMessageBox::information(this, "Result", msg);
-                // TODO: ذخیره در تاریخچه
+                if (blackScore > whiteScore) result = "Win";
+                else if (blackScore < whiteScore) result = "Loss";
+                else result = "Draw";
+
+                saveGameResult("Othello", "AI/Guest", "Black", result, finalScore);
+
+                QMessageBox::information(this, "پایان بازی", QString("سیاه: %1 | سفید: %2").arg(blackScore).arg(whiteScore));
+                updateHistoryTables();
                 ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome);
             }
         }
@@ -275,7 +326,7 @@ void MainWindow::on_btnLogin_clicked()
 
     User* user = userManager->loginUser(username, password);
     if(user) {
-        //ui->lblWelcome->setText("Welcome " + user->getName()); // نمایش نام کاربر
+        updateHistoryTables(); // لود کردن امتیازات کاربر
         ui->stackedWidget->setCurrentWidget(ui->pageMainMenu);
     } else {
         QMessageBox::critical(this, "Error", "Invalid username or password!");
@@ -392,14 +443,70 @@ void MainWindow::on_btnLogout_clicked()
     ui->stackedWidget->setCurrentWidget(ui->pageLogin);
 }
 
+void MainWindow::saveGameResult(QString gameName, QString opponent, QString role, QString result, int score) {
+    User* current = userManager->getCurrentUser();
+    if (!current) return;
+
+    GameRecord rec;
+    rec.gameName = gameName;
+    rec.opponent = opponent;
+    rec.role = role;
+    rec.result = result;
+    rec.score = score;
+    rec.date = QDateTime::currentDateTime().toString("yyyy/MM/dd HH:mm");
+
+    current->addGameRecord(rec);
+    userManager->saveUsers();
+}
+
+void MainWindow::updateHistoryTables() {
+    User* current = userManager->getCurrentUser();
+    if (!current) return;
+
+    auto history = current->getHistory();
+
+    // تابع کمکی برای پر کردن هر جدول
+    auto populateTable = [&](QTableWidget* table, QLabel* totalScoreLabel, QString gameNameFilter) {
+        if(!table) return; // جلوگیری از کرش اگر جدول در UI نباشد
+
+        table->setRowCount(0);
+        table->setColumnCount(5);
+        table->setHorizontalHeaderLabels({"Enemy", "Date", "Color", "Result", "Score"});
+
+        int totalScore = 0;
+        for (const auto& rec : history) {
+            if (rec.gameName == gameNameFilter) {
+                int row = table->rowCount();
+                table->insertRow(row);
+                table->setItem(row, 0, new QTableWidgetItem(rec.opponent));
+                table->setItem(row, 1, new QTableWidgetItem(rec.date));
+                table->setItem(row, 2, new QTableWidgetItem(rec.role));
+                table->setItem(row, 3, new QTableWidgetItem(rec.result));
+                table->setItem(row, 4, new QTableWidgetItem(QString::number(rec.score)));
+                totalScore += rec.score;
+            }
+        }
+        if(totalScoreLabel) totalScoreLabel->setText("Total Score : " + QString::number(totalScore));
+    };
+
+    populateTable(ui->tableConnectFourHistory, ui->lblTotalScoreC4, "Connect Four");
+    populateTable(ui->tableOthelloHistory, ui->lblTotalScoreOthello, "Othello");
+}
+
 // --- توابع ساده ناوبری ---
 void MainWindow::on_btnSignUp_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageSignup); }
 void MainWindow::on_btnForgot_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageForget); }
 void MainWindow::on_btnBack_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageMainMenu); }
 void MainWindow::on_btnStartGame_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 void MainWindow::on_BackformEdit_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageMainMenu); }
-void MainWindow::on_btnConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome); }
-void MainWindow::on_btnOthello_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome); }
+void MainWindow::on_btnConnectFour_clicked() {
+    updateHistoryTables();
+    ui->stackedWidget->setCurrentWidget(ui->pageConnectFourHome);
+}
+void MainWindow::on_btnOthello_clicked() {
+    updateHistoryTables();
+    ui->stackedWidget->setCurrentWidget(ui->pageOthelloHome);
+}
 void MainWindow::on_btnBackFromOthello_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 void MainWindow::on_btnBackFromOtelloHome_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }
 void MainWindow::on_btnBackFromConnectFour_clicked() { ui->stackedWidget->setCurrentWidget(ui->pageGameSelection); }

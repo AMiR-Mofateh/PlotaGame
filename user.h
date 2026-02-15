@@ -8,6 +8,7 @@
 struct GameRecord {
     QString gameName;   // نام بازی (Othello یا Connect4)
     QString opponent;   // نام حریف
+    QString role;       // اضافه شد: نقش بازیکن (رنگ مهره)
     QString result;     // Win, Loss, Draw
     int score;          // امتیاز کسب شده
     QString date;       // تاریخ بازی

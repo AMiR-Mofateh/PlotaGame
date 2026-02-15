@@ -74,6 +74,7 @@ void UserManager::saveUsers() {
             QJsonObject hObj;
             hObj["game"] = rec.gameName;
             hObj["opponent"] = rec.opponent;
+            hObj["role"] = rec.role;
             hObj["result"] = rec.result;
             hObj["score"] = rec.score;
             hObj["date"] = rec.date;
@@ -117,6 +118,7 @@ void UserManager::loadUsers() {
                 GameRecord rec;
                 rec.gameName = hObj["game"].toString();
                 rec.opponent = hObj["opponent"].toString();
+                rec.role = hObj["role"].toString();
                 rec.result = hObj["result"].toString();
                 rec.score = hObj["score"].toInt();
                 rec.date = hObj["date"].toString();

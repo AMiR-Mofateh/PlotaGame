@@ -58,6 +58,9 @@ private slots:
 
     void on_SaveEdit_clicked();
 
+    void updateHistoryTables(); // تابع کلی برای بروزرسانی جداول
+    void saveGameResult(QString gameName, QString opponent, QString role, QString result, int score);
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
