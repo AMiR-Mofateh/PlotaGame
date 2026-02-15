@@ -4,6 +4,8 @@
 #include "qpushbutton.h"
 #include <QMainWindow>
 #include "usermanager.h"
+#include "connectfourgame.h"
+#include "othellogame.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -66,6 +68,17 @@ private:
     QPushButton* connectFourCells[6][7];
     QPushButton* othelloCells[8][8];
     void updateProfilePage();
+
+    // اضافه کردن شیء های بازی
+    ConnectFourGame *c4Game;
+    OthelloGame *othelloGame;
+
+
+    // توابع کمکی برای بروزرسانی گرافیک
+    void updateConnectFourUI();
+    void updateOthelloUI();
+    void handleConnectFourClick(int col); // فقط ستون مهم است
+    void handleOthelloClick(int row, int col);
 
 };
 #endif // MAINWINDOW_H
