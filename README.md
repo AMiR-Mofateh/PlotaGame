@@ -38,5 +38,5 @@ If a time limit is enabled, each turn is timed
 Moves are shown simultaneously for both players
 
 Team Contributions
-Mahdi Habibi — Server Part
+Mahdi Habibi — Server Part /
 AmirMohamad Mofateh — Client Part
