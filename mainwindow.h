@@ -30,7 +30,6 @@ private slots:
     void on_Start_clicked();
     void on_Exit_clicked();
 
-    // Slots for handling client connections and data
     void onNewConnection();
     void onClientDisconnected();
     void onReadyRead();

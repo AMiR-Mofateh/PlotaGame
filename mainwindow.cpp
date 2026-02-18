@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->Ip->setText("127.0.0.1");
     ui->Port->setText("1234");
 
-    // --- تعریف یوزرهای تستی ---
-    // در نسخه نهایی این‌ها باید از فایل خوانده شوند
     loadUsers();
 
     if(userDatabase.isEmpty()){
@@ -23,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
 }
 
-void MainWindow::loadUsers() {
+void MainWindow::loadUsers()
+{
     QFile file(usersFilePath);
     if (!file.open(QIODevice::ReadOnly)) return;
 
@@ -32,16 +31,18 @@ void MainWindow::loadUsers() {
     QJsonObject obj = doc.object();
 
     userDatabase.clear();
-    for(auto key : obj.keys()) {
+
+    for(auto key : obj.keys())
+    {
         userDatabase.insert(key, obj[key].toString());
     }
     file.close();
     ui->Log->addItem("User database loaded. Count: " + QString::number(userDatabase.size()));
 }
 
-void MainWindow::saveUsers() {
+void MainWindow::saveUsers()
+{
     QJsonObject obj;
-    // تبدیل Map به JsonObject
     QMapIterator<QString, QString> i(userDatabase);
     while (i.hasNext()) {
         i.next();
@@ -50,19 +51,19 @@ void MainWindow::saveUsers() {
 
     QJsonDocument doc(obj);
     QFile file(usersFilePath);
-    if (file.open(QIODevice::WriteOnly)) {
+    if (file.open(QIODevice::WriteOnly))
+    {
         file.write(doc.toJson());
         file.close();
     }
 }
 MainWindow::~MainWindow() { stopServer(); delete ui; }
 
-// ... (توابع Start و Stop و Connection بدون تغییر می‌مانند) ...
-// فقط توابع زیر را کپی/جایگزین کنید:
 
-void MainWindow::on_Start_clicked() {
-    // کد قبلی خود را حفظ کنید
-    if (!serverRunning) {
+void MainWindow::on_Start_clicked()
+{
+    if (!serverRunning)
+    {
         if (!tcpServer->listen(QHostAddress(ui->Ip->text()), ui->Port->text().toUShort())) return;
         serverRunning = true;
         ui->Start->setText("Stop");
@@ -72,8 +73,10 @@ void MainWindow::on_Start_clicked() {
     }
 }
 
-void MainWindow::onNewConnection() {
-    while (tcpServer->hasPendingConnections()) {
+void MainWindow::onNewConnection()
+{
+    while (tcpServer->hasPendingConnections())
+    {
         QTcpSocket *socket = tcpServer->nextPendingConnection();
         clients.append(socket);
         connect(socket, &QTcpSocket::readyRead, this, &MainWindow::onReadyRead);
@@ -82,7 +85,9 @@ void MainWindow::onNewConnection() {
     }
 }
 
-void MainWindow::onClientDisconnected() {
+
+void MainWindow::onClientDisconnected()
+{
     QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
     if(!socket) return;
 
@@ -91,7 +96,6 @@ void MainWindow::onClientDisconnected() {
         onlineUsers.remove(socket);
         ui->Log->addItem("User " + user + " disconnected.");
 
-        // خبر دادن به بقیه که این کاربر رفت
         broadcastUserList();
     }
 
@@ -108,7 +112,6 @@ void MainWindow::stopServer()
     ui->Start->setText("Start");
 }
 
-// --- منطق اصلی دریافت پیام ---
 void MainWindow::onReadyRead()
 {
     QTcpSocket *senderSocket = qobject_cast<QTcpSocket*>(sender());
@@ -142,17 +145,14 @@ void MainWindow::onReadyRead()
                 response["success"] = true;
                 response["message"] = "Login Successful";
 
-                // ** اضافه کردن به لیست آنلاین‌ها **
                 onlineUsers.insert(senderSocket, user);
                 ui->Log->addItem("User " + user + " logged in.");
 
-                // ارسال پاسخ لاگین به همین کاربر
                 sendJson(senderSocket, response);
 
-                // ** ارسال لیست جدید کاربران به همه **
                 broadcastUserList();
 
-                return; // چون پاسخ را فرستادیم، return می‌کنیم تا دوبار ارسال نشود
+                return;
             }
         }
         else
@@ -168,7 +168,6 @@ void MainWindow::onReadyRead()
     {
         QString user = jsonObj["username"].toString();
         QString pass = jsonObj["password"].toString();
-        // می‌توانید فیلدهای دیگر مثل ایمیل و نام را هم بگیرید ولی فعلا یوزر/پسورد مهم است
 
         ui->Log->addItem("Signup attempt: " + user);
 
@@ -180,7 +179,7 @@ void MainWindow::onReadyRead()
             response["message"] = "Username already exists!";
         } else {
             userDatabase.insert(user, pass);
-            saveUsers(); // ذخیره در فایل
+            saveUsers();
 
             response["success"] = true;
             response["message"] = "Account created successfully!";
@@ -189,7 +188,6 @@ void MainWindow::onReadyRead()
         sendJson(senderSocket, response);
     }
 
-    // سایر دستورات مثل move بازی اینجا اضافه می‌شوند
 }
 
 bool MainWindow::checkLoginCredentials(QString username, QString password)
@@ -217,14 +215,12 @@ void MainWindow::broadcastUserList()
     json["type"] = "user_list";
 
     QJsonArray userArray;
-    // استخراج تمام نام‌ها از Map
     for(auto user : onlineUsers.values()) {
         userArray.append(user);
     }
 
     json["users"] = userArray;
 
-    // ارسال به همه کلاینت‌های متصل
     for(auto socket : clients) {
         if(socket->state() == QAbstractSocket::ConnectedState) {
             sendJson(socket, json);
